@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiSencilla.WebAPI", "ApiSencilla.WebAPI\ApiSencilla.WebAPI.csproj", "{419A6AB3-208D-40F3-A323-C699EC45131E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiSencilla.AppWebBlazor", "ApiSencilla.AppWebBlazor\ApiSencilla.AppWebBlazor.csproj", "{B1EC67B2-5B62-42AA-89A6-BCB32C8579B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{419A6AB3-208D-40F3-A323-C699EC45131E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{419A6AB3-208D-40F3-A323-C699EC45131E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{419A6AB3-208D-40F3-A323-C699EC45131E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1EC67B2-5B62-42AA-89A6-BCB32C8579B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1EC67B2-5B62-42AA-89A6-BCB32C8579B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1EC67B2-5B62-42AA-89A6-BCB32C8579B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1EC67B2-5B62-42AA-89A6-BCB32C8579B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -22,6 +22,8 @@ namespace ApiSencilla.WebAPI.Controllers
         }
 
         // GET: api/Books
+        // ************************************ METODO OBTENER *******************************************
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBook()
         {
@@ -33,6 +35,8 @@ namespace ApiSencilla.WebAPI.Controllers
         }
 
         // GET: api/Books/5
+        // ************************************ METODO BUSCAR POR ID *******************************************
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBook(int id)
         {
@@ -51,7 +55,7 @@ namespace ApiSencilla.WebAPI.Controllers
         }
 
         // PUT: api/Books/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // ************************************ METODO EDIT *******************************************
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBook(int id, Book book)
         {
@@ -81,8 +85,8 @@ namespace ApiSencilla.WebAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Books
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // POST: api/Books 
+       // ************************************ METODO CREATE *******************************************
         [HttpPost]
         public async Task<ActionResult<Book>> PostBook(Book book)
         {
@@ -97,6 +101,7 @@ namespace ApiSencilla.WebAPI.Controllers
         }
 
         // DELETE: api/Books/5
+        // ************************************ METODO DELETE *******************************************
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {

@@ -1,0 +1,213 @@
+﻿@page "/books-list"
+@inject BookService BookService
+@using ApiSencilla.WebAPI.Models;
+@using System.Threading.Tasks
+@using System.ComponentModel.DataAnnotations
+
+<h3>Book Management</h3>
+
+<!-- Button to open the "Add Book" modal -->
+<button class="btn btn-success mb-3" @onclick="ShowCreateModal">Crear nuevo Libro</button>
+
+<!-- ***************** Success Message ********************+ -->
+@if (IsBookSaved)
+{
+    <div class="alert alert-success mt-3">
+        Libro creado correctamentee!
+    </div>
+}
+
+<!-- Table to display books -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Pages</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (FilteredBooks != null && FilteredBooks.Any())
+        {
+            @foreach (var book in FilteredBooks)
+            {
+                <tr>
+                    <td>@book.Id</td>
+                    <td>@book.Title</td>
+                    <td>@book.Author</td>
+                    <td>@book.Pages</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" @onclick="() => ShowEditModal(book)">Edit</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ShowDeleteModal(book)">Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center">No books found...</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<!-- **********************************   MODAL DE CREATE AND EDIT  *********************************** -->
+<!-- Create/Edit Modal -->
+<div class="modal fade @(IsCreateModalVisible || IsEditModalVisible ? "show d-block" : "")" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@ModalTitle</h5>
+                <button type="button" class="btn-close" @onclick="CloseModal"></button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="SelectedBook" OnValidSubmit="SaveBook">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <InputText id="title" class="form-control" @bind-Value="SelectedBook.Title" />
+                        <ValidationMessage For="@(() => SelectedBook.Title)" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="author" class="form-label">Author</label>
+                        <InputText id="author" class="form-control" @bind-Value="SelectedBook.Author" />
+                        <ValidationMessage For="@(() => SelectedBook.Author)" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="pages" class="form-label">Pages</label>
+                        <InputNumber id="pages" class="form-control" @bind-Value="SelectedBook.Pages" />
+                        <ValidationMessage For="@(() => SelectedBook.Pages)" />
+                    </div>
+
+                </EditForm>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="SaveBook">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--  **************************************** MODAL DE ELIMINAR **************************************** -->
+<!-- Delete Confirmation Modal -->
+<div class="modal fade @(IsDeleteModalVisible ? "show d-block" : "")" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" @onclick="CloseDeleteModal"></button>
+            </div>
+            <div class="modal-body">
+                Estas seguro queu quieres eliminar este libro? "<strong>@SelectedBook.Title</strong>"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseDeleteModal">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="ConfirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Book>? Booksi;
+    private List<Book>? FilteredBooks;
+    private Book SelectedBook = new();
+    private string ModalTitle = string.Empty;
+    private bool IsCreateModalVisible = false;
+    private bool IsEditModalVisible = false;
+    private bool IsDeleteModalVisible = false;
+    private bool IsBookSaved = false;
+    private string SearchTerm = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBooks();
+    }
+
+    private async Task LoadBooks()
+    {
+        Booksi = await BookService.GetBooksAsync();
+        FilteredBooks = Booksi; // Initialize FilteredBooks with all books
+    }
+
+    private void FilterBooks()
+    {
+        if (string.IsNullOrWhiteSpace(SearchTerm))
+        {
+            FilteredBooks = Booksi; // If search term is empty, show all books
+        }
+        else
+        {
+            FilteredBooks = Booksi?.Where(b => b.Title.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                                b.Author.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
+                                   .ToList();
+        }
+    }
+
+    private void ShowCreateModal()
+    {
+        ModalTitle = "Add Book";
+        SelectedBook = new Book();
+        IsCreateModalVisible = true;
+        IsBookSaved = false;
+    }
+
+    private void ShowEditModal(Book book)
+    {
+        ModalTitle = "Edit Book";
+        SelectedBook = new Book
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                Pages = book.Pages
+            };
+        IsEditModalVisible = true;
+    }
+
+    private void ShowDeleteModal(Book book)
+    {
+        SelectedBook = book;
+        IsDeleteModalVisible = true;
+    }
+
+    private async Task SaveBook()
+    {
+        if (SelectedBook.Id == 0)
+        {
+            await BookService.AddBookAsync(SelectedBook);
+        }
+        else
+        {
+            await BookService.UpdateBookAsync(SelectedBook.Id, SelectedBook);
+        }
+
+        await LoadBooks();
+        IsBookSaved = true;
+        CloseModal();
+    }
+
+    private async Task ConfirmDelete()
+    {
+        await BookService.DeleteBookAsync(SelectedBook.Id);
+        await LoadBooks();
+        CloseDeleteModal();
+    }
+
+    private void CloseModal()
+    {
+        IsCreateModalVisible = false;
+        IsEditModalVisible = false;
+    }
+
+    private void CloseDeleteModal()
+    {
+        IsDeleteModalVisible = false;
+    }
+}
